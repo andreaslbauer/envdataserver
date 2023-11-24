@@ -1,0 +1,95 @@
+{% include "header.html" %}
+
+<body>
+{% include "navbar.html" %}
+<div class="container">
+    <h1>Data for Day {{date}}</h1>
+    <form name="Item_1" action="/daychart" method="GET">
+        <div class="input-group align-bottom">
+
+            <div class="col-sm-4">
+
+                <label class="control-label" for="date">Date</label>
+                <select class="form-select" aria-label="date" name="date" id="date">
+                    {% for item in dates %}
+                    <option value="{{ item }}" SELECTED>{{ item }}</option>
+                    {% endfor %}
+                </select>
+
+            </div>
+
+            <div class="col-sm-4">
+                <label class="control-label" for="source_ip">Hostname</label>
+                <select class="form-select" aria-label="source_ip" name="source_ip" id="source_ip">
+                    {% for item in source_ips %}
+                    <option value="{{ item }}" SELECTED>{{ item }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-sm-4">
+                <button type="submit" class="btn btn-primary align-bottom">Submit</button>
+            </div>
+
+        </div>
+    </form>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                Temperature 1
+                <div id="tempchart1"></div>
+            </div>
+            <div class="col">
+                Temperature 2
+                <div id="tempchart2"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                Temperature 3
+                <div id="tempchart3"></div>
+            </div>
+            <div class="col">
+                Temperature 4
+                <div id="tempchart4"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                Humidity
+                <div id="humidity"></div>
+            </div>
+            <div class="col">
+                Pressure
+                <div id="pressure"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                Moisture
+                <div id="moisture"></div>
+            </div>
+            <div class="col">
+                Light
+                <div id="light"></div>
+            </div>
+        </div>
+
+        <script>
+     const date = {{ date|tojson|safe }}
+     const dates = {{ dates|tojson|safe }}
+     const data = {{ data|tojson|safe }}
+
+
+
+
+        </script>
+        <script
+                type="text/javascript"
+                src="/static/daychart.js">
+        </script>
+
+    </div>
+</body>
+</html>

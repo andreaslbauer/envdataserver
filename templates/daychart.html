@@ -3,7 +3,7 @@
 <body>
 {% include "navbar.html" %}
 <div class="container">
-    <h1>Data for Day {{date}}</h1>
+    <h1>Data for Day {{date}} for {{source_ip}}</h1>
     <form name="Item_1" action="/daychart" method="GET">
         <div class="input-group align-bottom">
 
@@ -12,7 +12,7 @@
                 <label class="control-label" for="date">Date</label>
                 <select class="form-select" aria-label="date" name="date" id="date">
                     {% for item in dates %}
-                    <option value="{{ item }}" SELECTED>{{ item }}</option>
+                    <option value="{{ item }}" >{{ item }}</option>
                     {% endfor %}
                 </select>
 
@@ -22,7 +22,7 @@
                 <label class="control-label" for="source_ip">Hostname</label>
                 <select class="form-select" aria-label="source_ip" name="source_ip" id="source_ip">
                     {% for item in source_ips %}
-                    <option value="{{ item }}" SELECTED>{{ item }}</option>
+                    <option value="{{ item }}" >{{ item }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -80,8 +80,6 @@
      const date = {{ date|tojson|safe }}
      const dates = {{ dates|tojson|safe }}
      const data = {{ data|tojson|safe }}
-
-
 
 
         </script>

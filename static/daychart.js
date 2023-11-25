@@ -1,16 +1,13 @@
 
 
-
-console.log('Data: ', data);
-
 function getGraphDataByLabel(data, label) {
     var length = data.length;
     var chartdata = [];
     for (var i = 0; i < length; i++) {
        item = data[i]
        var datapoint = {
-                datetime: new Date(Date.parse(item['datetime'])),
-                value: item[label]
+                TimeStamp: new Date(Date.parse(item['datetime'])),
+                Value: item[label]
        };
        chartdata.push(datapoint);
     }
@@ -19,73 +16,71 @@ function getGraphDataByLabel(data, label) {
 };
 
 function drawChart(tag, data) {
+  var elementRect = document.getElementById(tag).getBoundingClientRect();
 
-  // Declare the chart dimensions and margins.
-  const width = 528;
-  const height = 500;
-  const marginTop = 20;
-  const marginRight = 30;
-  const marginBottom = 30;
-  const marginLeft = 40;
+  // set the dimensions and margins of the graph
+  var margin = {top: 10, right: 30, bottom: 30, left: 30},
+      width = elementRect.width - margin.left - margin.right,
+      height = 180 - margin.top - margin.bottom;
 
-  // Declare the x (horizontal position) scale.
-  const x = d3.scaleUtc(d3.extent(data, d => d.datetime), [marginLeft, width - marginRight]);
+  // append the svg object to the body of the page
+  var svg = d3.select('#' + tag)
+    .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
 
-  // Declare the y (vertical position) scale.
-  const y = d3.scaleLinear([0, d3.max(data, d => d.value)], [height - marginBottom, marginTop]);
+      // Add X axis --> it is a date format
+      var xaxis = d3.scaleTime()
+        .domain(d3.extent(data, function(d) { return d.TimeStamp; }))
+        .range([ 0, width ]);
+      svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(xaxis));
 
-  // Declare the line generator.
-  const line = d3.line()
-      .x(d => x(d.datetime))
-      .y(d => y(d.value));
+      // Add Y axis
+      var yaxis = d3.scaleLinear()
+        .domain([d3.min(data, function(d) { return +d.Value; }), d3.max(data, function(d) { return +d.Value; })])
+        .range([ height, 0 ]);
 
-  // Create the SVG container.
-  const svg = d3.create("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .attr("viewBox", [0, 0, width, height])
-      .attr("style", "max-width: 100%; height: auto; height: intrinsic;");
+      svg.append("g")
+        .call(d3.axisLeft(yaxis));
 
-  console.log('svg: ', svg);
+      // Add the line
+      svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 1.5)
+        .attr("d", d3.line()
+          .x(function(d) { return xaxis(d.TimeStamp) })
+          .y(function(d) { return yaxis(d.Value) })
+          )
 
-
-  // Add the x-axis.
-  svg.append("g")
-      .attr("transform", `translate(0, ${height - marginBottom})`)
-      .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
-
-  // Add the y-axis, remove the domain line, add grid lines and a label.
-  svg.append("g")
-      .attr("transform", `translate(${marginLeft},0)`)
-      .call(d3.axisLeft(y).ticks(height / 40))
-      .call(g => g.select(".domain").remove())
-      .call(g => g.selectAll(".tick line").clone()
-          .attr("x2", width - marginLeft - marginRight)
-          .attr("stroke-opacity", 0.1))
-      .call(g => g.append("text")
-          .attr("x", -marginLeft)
-          .attr("y", 10)
-          .attr("fill", "currentColor")
-          .attr("text-anchor", "start")
-          .text("Value"));
-
-  // Append a path for the line.
-  svg.append("path")
-      .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-width", 1.5)
-      .attr("d", line(data));
-
-
-  d3.select(tag).append("svg");
+svg.selectAll("line.horizontalGrid").data(yaxis.ticks(4)).enter()
+    .append("line")
+        .attr(
+        {
+            "class":"horizontalGrid",
+            "x1" : margin.right,
+            "x2" : width,
+            "y1" : function(d){ return yaxis(d);},
+            "y2" : function(d){ return yaxis(d);},
+            "fill" : "none",
+            "shape-rendering" : "crispEdges",
+            "stroke" : "black",
+            "stroke-width" : "1px"
+        });
 
 }
 
-drawChart('#tempchart1', getGraphDataByLabel(data, 'temp1'));
-drawChart('#tempchart2', getGraphDataByLabel(data, 'temp2'));
-drawChart('#tempchart3', getGraphDataByLabel(data, 'temp3'));
-drawChart('#tempchart4', getGraphDataByLabel(data, 'temp4'));
-drawChart('#humidity', getGraphDataByLabel(data, 'humidity'));
-drawChart('#pressure', getGraphDataByLabel(data, 'pressure'));
-drawChart('#moisture', getGraphDataByLabel(data, 'moisture'));
-drawChart('#light', getGraphDataByLabel(data, 'light'));
+drawChart('tempchart1', getGraphDataByLabel(data, 'temp1'));
+drawChart('tempchart2', getGraphDataByLabel(data, 'temp2'));
+drawChart('tempchart3', getGraphDataByLabel(data, 'temp3'));
+drawChart('tempchart4', getGraphDataByLabel(data, 'temp4'));
+drawChart('humidity', getGraphDataByLabel(data, 'humidity'));
+drawChart('pressure', getGraphDataByLabel(data, 'pressure'));
+drawChart('moisture', getGraphDataByLabel(data, 'moisture'));
+drawChart('light', getGraphDataByLabel(data, 'light'));

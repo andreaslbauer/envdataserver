@@ -28,7 +28,7 @@ def api_dates():
     dbfilename = "envplatdata.db"
     mydb = db.createConnection(dbfilename)
     cursor = mydb.cursor()
-    sql = '''select distinct date from datapoints '''
+    sql = '''select distinct date from datapoints order by date desc'''
     result = cursor.execute(sql).fetchall()
     data = []
     for item in result:
@@ -47,14 +47,14 @@ def daychart():
     dbfilename = "envplatdata.db"
     mydb = db.createConnection(dbfilename)
     cursor = mydb.cursor()
-    sql = '''select distinct date from datapoints '''
+    sql = '''select distinct date from datapoints order by date desc'''
     result = cursor.execute(sql).fetchall()
     dates = []
     for item in result:
         for subitem in item:
             dates.append(subitem)
 
-    sql = '''select distinct source_ip from datapoints '''
+    sql = '''select distinct source_ip from datapoints order by source_ip asc'''
     result = cursor.execute(sql).fetchall()
     source_ips = []
     for item in result:

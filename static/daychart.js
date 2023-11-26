@@ -19,9 +19,9 @@ function drawChart(tag, data) {
   var elementRect = document.getElementById(tag).getBoundingClientRect();
 
   // set the dimensions and margins of the graph
-  var margin = {top: 10, right: 10, bottom: 30, left: 40},
+  var margin = {top: 10, right: 10, bottom: 50, left: 40},
       width = elementRect.width - margin.left - margin.right,
-      height = 180 - margin.top - margin.bottom;
+      height = 220 - margin.top - margin.bottom;
 
   // append the svg object to the body of the page
   var svg = d3.select('#' + tag)
@@ -30,23 +30,26 @@ function drawChart(tag, data) {
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
+            "translate(" + margin.left + "," + margin.top + ")")
+      .on("pointerenter pointermove", pointermoved)
+      .on("pointerleave", pointerleft)
+      .on("touchstart", event => event.preventDefault());
 
       // Add X axis --> it is a date format
-      var xaxis = d3.scaleTime()
+      var xscale = d3.scaleTime()
         .domain(d3.extent(data, function(d) { return d.TimeStamp; }))
         .range([ 0, width ]);
       svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(xaxis));
+        .call(d3.axisBottom(xscale));
 
       // Add Y axis
-      var yaxis = d3.scaleLinear()
+      var yscale = d3.scaleLinear()
         .domain([d3.min(data, function(d) { return +d.Value; }), d3.max(data, function(d) { return +d.Value; })])
         .range([ height, 0 ]);
 
       svg.append("g")
-        .call(d3.axisLeft(yaxis));
+        .call(d3.axisLeft(yscale));
 
       // Add the line
       svg.append("path")
@@ -55,23 +58,60 @@ function drawChart(tag, data) {
         .attr("stroke", "steelblue")
         .attr("stroke-width", 1.5)
         .attr("d", d3.line()
-          .x(function(d) { return xaxis(d.TimeStamp) })
-          .y(function(d) { return yaxis(d.Value) })
+          .x(function(d) { return xscale(d.TimeStamp) })
+          .y(function(d) { return yscale(d.Value) })
           )
 
-svg.selectAll("line.horizontalGrid").data(yaxis.ticks(4)).enter()
-    .append("line")
-        .attr(
-        {
-            "class":"horizontalGrid",
-            "x1" : margin.right,
-            "x2" : width,
-            "y1" : function(d){ return yaxis(d);},
-            "y2" : function(d){ return yaxis(d);},
-            "fill" : "none",
-            "shape-rendering" : "crispEdges",
-            "stroke" : "black",
-            "stroke-width" : "1px"
-        });
+    // Create the tooltip container.
+  const tooltip = svg.append("g");
+
+  // Add the event listeners that show or hide the tooltip.
+  const bisect = d3.bisector(d => d.TimeStamp).center;
+  function pointermoved(event) {
+  console.log('pointermoved');
+    const [x, y] = d3.pointer(event);
+    console.log(x, y);
+    const i = bisect(data, xscale.invert(d3.pointer(event)[0]));
+    tooltip.style("display", null);
+    tooltip.attr("transform", `translate(${xscale(data[i].TimeStamp)},${yscale(data[i].Value)})`);
+
+    const path = tooltip.selectAll("path")
+      .data([,])
+      .join("path")
+        .attr("fill", "white")
+        .attr("stroke", "black");
+
+  function formatDate(date) {
+    return date.toLocaleString("en", {
+      hour: "numeric",
+      minute: "numeric"
+    });
+  }
+
+    const text = tooltip.selectAll("text")
+      .data([,])
+      .join("text")
+      .call(text => text
+        .selectAll("tspan")
+        .data([formatDate(data[i].TimeStamp), data[i].Value])
+        .join("tspan")
+          .attr("x", 0)
+          .attr("y", (_, i) => `${i * 1.1}em`)
+          .attr("font-weight", (_, i) => i ? null : "bold")
+          .text(d => d));
+
+    size(text, path);
+  }
+
+  function pointerleft() {
+    tooltip.style("display", "none");
+  }
+
+  // Wraps the text with a callout path of the correct size, as measured in the page.
+  function size(text, path) {
+    const {x, y, width: w, height: h} = text.node().getBBox();
+    text.attr("transform", `translate(${-w / 2},${15 - y})`);
+    path.attr("d", `M${-w / 2 - 10},5H-5l5,-5l5,5H${w / 2 + 10}v${h + 20}h-${w + 20}z`);
+  }
 
 }

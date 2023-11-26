@@ -19,7 +19,7 @@ function drawChart(tag, data) {
   var elementRect = document.getElementById(tag).getBoundingClientRect();
 
   // set the dimensions and margins of the graph
-  var margin = {top: 10, right: 30, bottom: 30, left: 30},
+  var margin = {top: 10, right: 10, bottom: 30, left: 40},
       width = elementRect.width - margin.left - margin.right,
       height = 180 - margin.top - margin.bottom;
 
@@ -75,12 +75,3 @@ svg.selectAll("line.horizontalGrid").data(yaxis.ticks(4)).enter()
         });
 
 }
-
-drawChart('tempchart1', getGraphDataByLabel(data, 'temp1'));
-drawChart('tempchart2', getGraphDataByLabel(data, 'temp2'));
-drawChart('tempchart3', getGraphDataByLabel(data, 'temp3'));
-drawChart('tempchart4', getGraphDataByLabel(data, 'temp4'));
-drawChart('humidity', getGraphDataByLabel(data, 'humidity'));
-drawChart('pressure', getGraphDataByLabel(data, 'pressure'));
-drawChart('moisture', getGraphDataByLabel(data, 'moisture'));
-drawChart('light', getGraphDataByLabel(data, 'light'));

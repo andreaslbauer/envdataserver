@@ -49,7 +49,10 @@ function drawChart(tag, data) {
         .range([ height, 0 ]);
 
       svg.append("g")
-        .call(d3.axisLeft(yscale));
+        .call(d3.axisLeft(yscale))
+        .call(g => g.selectAll(".tick line").clone()
+          .attr("x2", width)
+          .attr("stroke-opacity", 0.1));
 
       // Add the line
       svg.append("path")
@@ -68,9 +71,7 @@ function drawChart(tag, data) {
   // Add the event listeners that show or hide the tooltip.
   const bisect = d3.bisector(d => d.TimeStamp).center;
   function pointermoved(event) {
-  console.log('pointermoved');
     const [x, y] = d3.pointer(event);
-    console.log(x, y);
     const i = bisect(data, xscale.invert(d3.pointer(event)[0]));
     tooltip.style("display", null);
     tooltip.attr("transform", `translate(${xscale(data[i].TimeStamp)},${yscale(data[i].Value)})`);

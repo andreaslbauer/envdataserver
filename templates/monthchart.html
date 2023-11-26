@@ -3,26 +3,15 @@
 <body>
 {% include "navbar.html" %}
 <div class="container">
-    <h1>Data for Day {{date}} for {{source_ip}}</h1>
-    <form name="Item_1" action="/daychart" method="GET">
+    <h1>{{source_ip}}</h1>
+    <form name="Item_1" action="/monthchart" method="GET">
         <div class="input-group align-bottom">
-
-            <div class="col-sm-4">
-
-                <label class="control-label" for="date">Date</label>
-                <select class="form-select" aria-label="date" name="date" id="date">
-                    {% for item in dates %}
-                    <option value="{{ item }}" >{{ item }}</option>
-                    {% endfor %}
-                </select>
-
-            </div>
 
             <div class="col-sm-4">
                 <label class="control-label" for="source_ip">Hostname</label>
                 <select class="form-select" aria-label="source_ip" name="source_ip" id="source_ip">
                     {% for item in source_ips %}
-                    <option value="{{ item }}" >{{ item }}</option>
+                    <option value="{{ item }}">{{ item }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -40,6 +29,8 @@
                 Temperature 1
                 <div id="tempchart1"></div>
             </div>
+        </div>
+        <div class="row">
             <div class="col">
                 Temperature 2
                 <div id="tempchart2"></div>
@@ -50,6 +41,8 @@
                 Temperature 3
                 <div id="tempchart3"></div>
             </div>
+        </div>
+        <div class="row">
             <div class="col">
                 Temperature 4
                 <div id="tempchart4"></div>
@@ -60,6 +53,8 @@
                 Humidity
                 <div id="humidity"></div>
             </div>
+        </div>
+        <div class="row">
             <div class="col">
                 Pressure
                 <div id="pressure"></div>
@@ -70,6 +65,8 @@
                 Moisture
                 <div id="moisture"></div>
             </div>
+        </div>
+        <div class="row">
             <div class="col">
                 Light
                 <div id="light"></div>
@@ -77,7 +74,6 @@
         </div>
 
         <script>
-     const date = {{ date|tojson|safe }}
      const dates = {{ dates|tojson|safe }}
      const data = {{ data|tojson|safe }}
 
@@ -88,7 +84,8 @@
                 src="/static/chart.js">
         </script>
 
-  <script>
+        <script>
+  console.log(data);
 drawChart('tempchart1', getGraphDataByLabel(data, 'temp1'));
 drawChart('tempchart2', getGraphDataByLabel(data, 'temp2'));
 drawChart('tempchart3', getGraphDataByLabel(data, 'temp3'));
@@ -97,7 +94,8 @@ drawChart('humidity', getGraphDataByLabel(data, 'humidity'));
 drawChart('pressure', getGraphDataByLabel(data, 'pressure'));
 drawChart('moisture', getGraphDataByLabel(data, 'moisture'));
 drawChart('light', getGraphDataByLabel(data, 'light'));
-</script>
+
+        </script>
 
     </div>
 </body>

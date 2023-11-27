@@ -84,6 +84,8 @@ function drawChart(tag, data) {
 
   function formatDate(date) {
     return date.toLocaleString("en", {
+      day: "numeric",
+      month: "numeric",
       hour: "numeric",
       minute: "numeric"
     });

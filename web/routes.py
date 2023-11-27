@@ -128,6 +128,5 @@ def monthchart():
 
         if dataitem['date'] > "2021-01-01":
             data.append(dataitem)
-            print(dataitem)
 
     return render_template('monthchart.html', source_ip = source_ip, source_ips = source_ips, dates = dates, data = data )

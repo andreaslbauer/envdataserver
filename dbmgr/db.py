@@ -147,6 +147,7 @@ def collector(datacollectors, dbfilename):
                                         temp1, temp2, temp3, temp4, moisture, humidity, pressure, light)
                             if insertRow(mydb, data_row):
                                 rows_count += 1
+                                logging.info(f'Loaded data from: {hostname}')
 
                             mydb.commit()
 
